@@ -1,0 +1,181 @@
+﻿@using System.Security.Claims
+@model WebApplication2.Models.Post
+
+@* Blog Post Header *@
+@if (Model.UserId == ViewBag.UserId)
+{
+    <div class="post-actions">
+        <a href="@Url.Action("Edit", "Post", new { id = Model.Id })" class="btn btn-primary">Edit</a>
+        <form method="post" asp-controller="post" asp-action="Delete" asp-route-id="@Model.Id" onsubmit="return confirm('Are you sure you want to delete this post?');" style="display:inline;">
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+    </div>
+}
+<div class="post-header">
+    <h2>@Model.Title</h2>
+    <p class="post-meta">By <strong>@Model.UserId</strong> on @Model.CreatedAt.ToString("MMMM dd, yyyy")</p>
+    <p class="post-content">@Model.Content</p>
+</div>
+
+<hr />
+
+@* Comments Section *@
+<div class="comments-section">
+    <h3>Comments</h3>
+    @foreach (var comment in Model.Comments)
+    {
+        <div class="comment">
+            <div class="comment-header">
+                <strong>@comment.UserId</strong> said:
+                <small class="comment-date">@comment.CreatedAt.ToString("MMMM dd, yyyy h:mm tt")</small>
+            </div>
+            <p class="comment-text">@comment.Text</p>
+
+            @if (comment.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+            {
+                <form method="post" asp-controller="Comment" asp-action="Delete" asp-route-id="@comment.Id">
+                    <button type="submit" class="btn-delete">Delete</button>
+                </form>
+            }
+        </div>
+    }
+</div>
+
+<hr />
+
+@* Comment Form *@
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="comment-form">
+        <form method="post" asp-controller="Comment" asp-action="Create" asp-route-postId="@Model.Id">
+            <textarea name="commentText" placeholder="Add a comment..." rows="4"></textarea>
+            <button type="submit" class="btn-submit">Post Comment</button>
+        </form>
+    </div>
+}
+else
+{
+    <p class="login-message">Please log in to comment.</p>
+}
+
+@* Styles *@
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        color: #333;
+    }
+
+    .post-header {
+        background-color: #fff;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .post-header h2 {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+
+    .post-meta {
+        font-size: 1rem;
+        color: #888;
+    }
+
+    .post-content {
+        margin-top: 20px;
+        font-size: 1.2rem;
+        line-height: 1.6;
+        color: #444;
+    }
+
+    .comments-section {
+        margin-top: 40px;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .comment {
+        padding: 15px;
+        margin-bottom: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .comment-header {
+        display: flex;
+        justify-content: space-between;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .comment-date {
+        font-size: 0.9rem;
+        color: #888;
+    }
+
+    .comment-text {
+        font-size: 1rem;
+        color: #555;
+        margin-top: 10px;
+    }
+
+    .btn-delete {
+        background-color: #ff4d4d;
+        color: white;
+        padding: 6px 12px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    .btn-delete:hover {
+        background-color: #e60000;
+    }
+
+    .comment-form {
+        margin-top: 30px;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .comment-form textarea {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: #333;
+    }
+
+    .btn-submit {
+        background-color: #4CAF50;
+        color: white;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+        font-size: 1rem;
+    }
+
+    .btn-submit:hover {
+        background-color: #45a049;
+    }
+
+    .login-message {
+        font-size: 1rem;
+        color: #888;
+    }
+</style>

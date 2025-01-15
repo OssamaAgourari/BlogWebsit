@@ -1,0 +1,81 @@
+﻿@model IEnumerable<WebApplication2.Models.Post>
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+<h1 class="text-center my-4">All Posts</h1>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <p class="text-center">
+        <a asp-action="Create" class="btn btn-primary">Create New Post</a>
+    </p>
+}
+@foreach (var post in Model)
+{
+    <div class="card mb-4">
+        <div class="card-body">
+            <h2 class="card-title">
+                @Html.ActionLink(post.Title, "Details", new { id = post.Id })
+            </h2>
+            <p class="card-text">
+                @if (post.Content.Length > 100)
+                {
+                    @post.Content.Substring(0, 100)
+               }
+                else
+                {
+                    @post.Content
+                }
+            </p>
+            <p><strong>Category:</strong> @post.Category.Name</p>
+            <p><strong>Created At:</strong> @post.CreatedAt.ToString("f")</p>
+        </div>
+    </div>
+    <hr />
+}
+
+<style>
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    .card-text {
+        font-size: 1rem;
+        color: #555;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+    h1 {
+        font-family: 'Arial', sans-serif;
+        font-weight: 700;
+    }
+
+    hr {
+        border-color: #f1f1f1;
+    }
+</style>
